@@ -22,6 +22,9 @@ color = (random.randint(0, 255),
          random.randint(0, 255),
          random.randint(0, 255))
 
+last_move_time = pygame.time.get_ticks()
+move_interval = 2000 # В миллисекундах = 2 сек
+
 running = True
 while running:
     screen.fill(color)
@@ -33,12 +36,15 @@ while running:
             if (target_x <= mouse_x <= target_x + target_width and
                 target_y <= mouse_y <= target_y + target_height):
                 target_x, target_y = new_target_place(target_width, target_height)
+                last_move_time = pygame.time.get_ticks()
 
-
+    if pygame.time.get_ticks() - last_move_time > move_interval:
+        target_x, target_y = new_target_place(target_width, target_height)
+        last_move_time = pygame.time.get_ticks()
     screen.blit(target_img, (target_x, target_y))
 
 
 
 
-    pygame.display.update()
+    pygame.display.flip()
 pygame.quit()
