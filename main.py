@@ -18,12 +18,18 @@ target_img = pygame.image.load('./img/target.png')
 target_width = 80
 target_height = 80
 target_x, target_y = new_target_place(target_width, target_height)
+boom_img = pygame.image.load('./img/boom.png')
+
+
 color = (random.randint(0, 255),
          random.randint(0, 255),
          random.randint(0, 255))
 
 last_move_time = pygame.time.get_ticks()
-move_interval = 2000 # В миллисекундах = 2 сек
+move_interval = 1000 # В миллисекундах = 1 сек
+show_boom = False
+boom_start_time = 0
+boom_interval = 500
 
 running = True
 while running:
@@ -35,13 +41,25 @@ while running:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if (target_x <= mouse_x <= target_x + target_width and
                 target_y <= mouse_y <= target_y + target_height):
-                target_x, target_y = new_target_place(target_width, target_height)
-                last_move_time = pygame.time.get_ticks()
+                show_boom = True
+                boom_start_time = pygame.time.get_ticks()
+#                target_x, target_y = new_target_place(target_width, target_height)
+#                last_move_time = pygame.time.get_ticks()
 
-    if pygame.time.get_ticks() - last_move_time > move_interval:
-        target_x, target_y = new_target_place(target_width, target_height)
-        last_move_time = pygame.time.get_ticks()
-    screen.blit(target_img, (target_x, target_y))
+    current_time = pygame.time.get_ticks()
+    if show_boom:
+        screen.blit(boom_img, (target_x, target_y))
+        if current_time - boom_start_time >= boom_interval:
+            show_boom = False
+            target_x, target_y = new_target_place(target_width, target_height)
+            last_move_time = pygame.time.get_ticks()
+    else:
+        if current_time - last_move_time > move_interval:
+            target_x, target_y = new_target_place(target_width, target_height)
+            last_move_time = current_time
+
+    if not show_boom:
+        screen.blit(target_img, (target_x, target_y))
 
 
 
